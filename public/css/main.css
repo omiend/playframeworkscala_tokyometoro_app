@@ -1,3 +1,12 @@
 body {
-  padding-top: 30px;
+	padding-top: 30px;
+}
+#map-canvas{
+	height: 100%;
+	margin : 0%;
+	padding: 25%;
+}
+/* BootsrapとGoogleMapsAPIを併用した際のZoomControlle表示つぶれ対応 */
+.gm-style img{
+	max-width : none;
 }

@@ -10,5 +10,5 @@ GET     /assets/*file               controllers.Assets.at(path="/public", file)
 
 ### Ajax 
 # javascriptRoutes
-GET     /javascriptRoutes                         controllers.JsRouter.javascriptRoutes
-POST    /ajaxHelloWorld                           controllers.AjaxController.ajaxHelloWorld
+GET     /javascriptRoutes           controllers.JsRouter.javascriptRoutes
+POST    /ajaxTokyoMetoroAPIExecute  controllers.AjaxController.ajaxTokyoMetoroAPIExecute(mapCenterLat: String, mapCenterLng: String)

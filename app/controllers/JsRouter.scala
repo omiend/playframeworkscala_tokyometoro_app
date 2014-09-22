@@ -11,7 +11,7 @@ object JsRouter extends Controller {
       import routes.javascript._
       Ok(
         Routes.javascriptRouter("jsRoutes")(
-           routes.javascript.AjaxController.ajaxHelloWorld
+           routes.javascript.AjaxController.ajaxTokyoMetoroAPIExecute
         )
       ).as("text/javascript")
   }

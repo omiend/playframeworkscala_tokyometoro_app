@@ -15,6 +15,68 @@
       <script src="@routes.Assets.at("js/html5shiv.js")"></script>
       <script src="@routes.Assets.at("js/respond.min.js")"></script>
     <![endif]-->
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
+    <script>
+    var map;
+    var mapOptions;
+    /**
+     * 初期化
+     */
+    function initialize() {
+      mapOptions = {
+        zoom: 12,
+        scrollwheel: false,
+        center: new google.maps.LatLng(35.68159738288667,139.76475656032562)
+      };
+      map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+      /**
+       * クリック時の処理
+       */
+      google.maps.event.addDomListener(map, 'click', function(event){
+        console.log(event.latLng.k + '|' + event.latLng.B);
+        mapOptions = {
+          scrollwheel: !mapOptions.scrollwheel
+        };
+        map.setOptions(mapOptions);
+      });
+      /**
+       * マウス移動時の処理
+       */
+      google.maps.event.addDomListener(map, 'mousemove', function(event){
+        //console.log(event.latLng.k + '|' + event.latLng.B);
+      });
+      /**
+       * マウスアウト時の処理
+       */
+      google.maps.event.addDomListener(map, 'mouseout', function(event){
+        mapOptions = {
+          scrollwheel: false
+        };
+        map.setOptions(mapOptions);
+      });
+      /**
+       * マウスアウト時の処理
+       */
+      google.maps.event.addDomListener(map, 'dragend', function(event){
+        console.log(map.getCenter())
+        jsRoutes.controllers.AjaxController.ajaxTokyoMetoroAPIExecute(map.getCenter().k, map.getCenter().B).ajax({
+          beforeSend: function() {},
+          complete: function() {},
+          success: function(result) {
+            console.log("success : " + result)
+          },
+          error: function(result) {
+            window.alert("エラーが発生しました。画面を更新頂くか、時間をおいてから再度お試し下さい。");
+            $("#map-canvas").append("<p>エラーが発生しました。画面を更新頂くか、時間をおいてから再度お試し下さい。</p>");
+            console.log("error : " + result)
+          }
+        });
+
+      });
+    }
+    // 初期化
+    google.maps.event.addDomListener(window, 'load', initialize);
+    </script>
   </head>
   <body>
 
@@ -55,10 +117,10 @@
                   </div>
                 </div>
               </form>
-            </div><!-- /.navbar-collapse -->
-          </nav><!-- /navbar -->
+            </div>
+          </nav>
         </div>
-      </div> <!-- /row -->
+      </div>
 
       <div class="row row-offcanvas row-offcanvas-right">
         <div class="col-xs-12 col-md-12 col-sm-12 col-lg-12">
@@ -67,9 +129,9 @@
           @flash.get("error").map   { message => <div class="alert alert-danger">@message</div> }
           @content
         </div>
-      </div><!--/row-->
+      </div>
 
-    </div> <!-- /container -->
+    </div>
 
     <footer>
       <div class="container">
