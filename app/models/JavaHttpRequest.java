@@ -10,19 +10,13 @@ import org.apache.commons.io.IOUtils;
 
 public class JavaHttpRequest {
 
-	public static String execute(String mapCenterLat, String mapCenterLng) {
+	public static String execute(String type, String consumerKey) {
 
-		// RESTのURL作成
-		// String url = "https://api.tokyometroapp.jp/api/v2/places"
-		//            + "?rdf:type=ug:Poi"
-		// 		   + "&lon=" + mapCenterLng
-		// 		   + "&lat=" + mapCenterLat
-		// 		   + "&radius=" + "1000"
-		//            + "&acl:consumerKey=66d3509375b4fb4cbf90c4b3dfb17976e3951ddd7073ec1613cc81c3fc38f44e";
 		String url = "https://api.tokyometroapp.jp/api/v2/datapoints"
-		           + "?rdf:type=odpt:TrainInformation"
-		           + "&acl:consumerKey=66d3509375b4fb4cbf90c4b3dfb17976e3951ddd7073ec1613cc81c3fc38f44e";
-		System.out.println(url);
+		           + "?rdf:type=" + type
+		           + "&acl:consumerKey=" + consumerKey;
+
+		           // System.out.println("--------------------------url : " + url);
 
 		BufferedReader br = null;
 		StringBuilder sb = new StringBuilder();
@@ -40,7 +34,12 @@ public class JavaHttpRequest {
 				sb.append(line);
 			}
 
-			return sb.toString();
+			/*
+			 * 置換内容
+			 * "odpt:availableTimeFrom":"05-00" → "odpt-availableTimeFrom":"05-00"
+			 * "odpt:carNumber":1 → "odpt-carNumber":1
+			 */
+			return sb.toString().replaceAll("\":\"", "_CENTER_").replaceAll("\":", "_LEFT_").replaceAll(":\"", "TEST").replaceAll(":", "_").replaceAll("_CENTER_", "\":\"").replaceAll("_LEFT_", "\":");
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
