@@ -15,14 +15,13 @@ public class JavaHttpRequest {
 		String url = "https://api.tokyometroapp.jp/api/v2/datapoints"
 		           + "?rdf:type=" + type
 		           + "&acl:consumerKey=" + consumerKey;
-
-		           // System.out.println("--------------------------url : " + url);
-
+		
 		BufferedReader br = null;
 		StringBuilder sb = new StringBuilder();
 		String line = null;
 
 		try {
+			
 			// HTTPコネクション作成
 			HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
 			// GETメソッド指定

@@ -18,8 +18,8 @@ object AjaxController extends Controller {
    */
   def ajaxTokyoMetoroAPIExecute(executeType: String) = Action { request =>
   	executeType match {
-  		case "" => BadRequest 
-  		case _ => Ok(JavaHttpRequest.execute(executeType, consumerKey))
+  		case "" => BadRequest
+  		case _  => Ok(JavaHttpRequest.execute(executeType, consumerKey))
   	}
   }
 
