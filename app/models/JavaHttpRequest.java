@@ -10,12 +10,13 @@ import org.apache.commons.io.IOUtils;
 
 public class JavaHttpRequest {
 
-	public static String execute(String type, String consumerKey) {
+	public static String execute(String url) {
 
-		String url = "https://api.tokyometroapp.jp/api/v2/datapoints"
-		           + "?rdf:type=" + type
-		           + "&acl:consumerKey=" + consumerKey;
-		
+		System.setProperty("proxySet", "true");
+		System.setProperty("proxyHost", "sg-sd27b-1.isid.co.jp");
+		System.setProperty("proxyPort", "8080");
+		System.out.println(url);
+
 		BufferedReader br = null;
 		StringBuilder sb = new StringBuilder();
 		String line = null;
@@ -33,12 +34,12 @@ public class JavaHttpRequest {
 				sb.append(line);
 			}
 
-			/*
-			 * 置換内容
-			 * "odpt:availableTimeFrom":"05-00" → "odpt-availableTimeFrom":"05-00"
-			 * "odpt:carNumber":1 → "odpt-carNumber":1
-			 */
-			return sb.toString().replaceAll("\":\"", "_CENTER_").replaceAll("\":", "_LEFT_").replaceAll(":\"", "TEST").replaceAll(":", "_").replaceAll("_CENTER_", "\":\"").replaceAll("_LEFT_", "\":");
+			// --------------------------------------------------------------------
+			// 【置換例】
+			// "odpt:availableTimeFrom":"05-00" → "odpt-availableTimeFrom":"05-00"
+			// "odpt:carNumber":1 → "odpt-carNumber":1
+			// --------------------------------------------------------------------
+			return sb.toString().replaceAll("\":\"", "_CENTER_").replaceAll("\":", "_LEFT_").replaceAll(":\"", "TEST").replaceAll(":", "_").replaceAll("_CENTER_", "\":\"").replaceAll("_LEFT_", "\":").replaceAll("@", "");
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {

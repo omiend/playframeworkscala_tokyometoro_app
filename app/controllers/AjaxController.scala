@@ -14,13 +14,47 @@ import java.io.File
 object AjaxController extends Controller {
 
   /**
-   * TokyoMetoro REST API 実行処理
+   * 鉄道路線情報 odpt:Railway
    */
-  def ajaxTokyoMetoroAPIExecute(executeType: String) = Action { request =>
-  	executeType match {
-  		case "" => BadRequest
-  		case _  => Ok(JavaHttpRequest.execute(executeType, consumerKey))
-  	}
+  def getRailway = Action {
+    val url = "https://api.tokyometroapp.jp/api/v2/datapoints?rdf:type=odpt:Railway&acl:consumerKey=" + consumerKey;
+    JavaHttpRequest.execute(url) match {
+      case st: String => Ok(st)
+      case _          => BadRequest
+    }
+  }
+
+  /**
+   * 駅情報 odpt:Station
+   */
+  def getStation(railWay: String) = Action { 
+    val url = "https://api.tokyometroapp.jp/api/v2/datapoints?rdf:type=odpt:Station&odpt:railway=" + railWay.replaceAll("_", ":") + "&acl:consumerKey=" + consumerKey;
+    JavaHttpRequest.execute(url) match {
+      case st: String => Ok(st)
+      case _          => BadRequest
+    }
+  }
+
+  /**
+   * 駅時刻表 odpt:StationTimetable
+   */
+  def getStationTimetable(station: String) = Action { 
+    val url = "https://api.tokyometroapp.jp/api/v2/datapoints?rdf:type=odpt:StationTimetable&odpt:station=" + station.replaceAll("_", ":") + "&acl:consumerKey=" + consumerKey;
+    JavaHttpRequest.execute(url) match {
+      case st: String => Ok(st)
+      case _          => BadRequest
+    }
+  }
+
+  /**
+   * 駅施設情報 odpt:StationFacility
+   */
+  def getStationFacility(station: String) = Action { 
+    val url = "https://api.tokyometroapp.jp/api/v2/datapoints?rdf:type=odpt:StationFacility" + "&owl:sameAs=" + station.replaceAll("_", ":") + "&acl:consumerKey=" + consumerKey;
+    JavaHttpRequest.execute(url) match {
+      case st: String => Ok(st)
+      case _          => BadRequest
+    }
   }
 
   /**

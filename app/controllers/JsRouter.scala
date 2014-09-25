@@ -11,7 +11,10 @@ object JsRouter extends Controller {
       import routes.javascript._
       Ok(
         Routes.javascriptRouter("jsRoutes")(
-           routes.javascript.AjaxController.ajaxTokyoMetoroAPIExecute
+            routes.javascript.AjaxController.getRailway
+           ,routes.javascript.AjaxController.getStation
+           ,routes.javascript.AjaxController.getStationTimetable
+           ,routes.javascript.AjaxController.getStationFacility
         )
       ).as("text/javascript")
   }
