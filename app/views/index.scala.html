@@ -4,6 +4,8 @@
 
   <SELECT id="RailWay" name="RailWay"></SELECT>
   <SELECT id="Station" name="Station"></SELECT>
+  <br/>
+  <div id="Facility"></div>
   <div id="StationTimetable"></div>
 <!--   <div id="map-canvas"></div> -->
 
@@ -173,7 +175,9 @@
   /** 駅施設情報 odpt:StationFacility */
   function getStationFacility(station) {
     jsRoutes.controllers.AjaxController.getStationFacility(station).ajax({
-      beforeSend: function() {},
+      beforeSend: function() {
+        $("#Facility").children().remove();
+      },
       complete: function() {},
       success: function(result) {
         var resultList = JSON.parse(result);
@@ -201,6 +205,7 @@
                 + " | " + resultList[i].odpt_barrierfreeFacility[j].ugsrv_categoryName
                 + " | " + resultList[i].odpt_barrierfreeFacility[j].ugsrv_remark
               );
+              $("#Facility").append("<p>" + resultList[i].odpt_barrierfreeFacility[j].odpt_placeName + "に" + resultList[i].odpt_barrierfreeFacility[j].ugsrv_categoryName + "があります。</p>");
             }
           }
         }
