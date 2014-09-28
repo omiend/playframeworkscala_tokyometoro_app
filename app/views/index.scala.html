@@ -2,8 +2,8 @@
 
 @main(titele)(flash) {
 
-  <SELECT id="RailWay" name="RailWay"></SELECT>
-  <SELECT id="Station" name="Station"></SELECT>
+  <SELECT id="RailWay" name="RailWay" class="form-control select select-primary" data-toggle="RailWay"></SELECT>
+  <SELECT id="Station" name="Station" class="form-control select select-primary" data-toggle="Station"></SELECT>
   <br/>
   <div id="Facility"></div>
   <div id="StationTimetable"></div>
@@ -125,6 +125,7 @@
       beforeSend: function() {
         $("#RailWay").children().remove();
         $("#RailWay").append($('<option>').html("--- 選択してください ---").val(""));
+        $("#Station").append($('<option>').html("--- 路線を選択してください ---").val(""));
       },
       complete: function() {},
       success: function(result) {
@@ -150,7 +151,7 @@
     jsRoutes.controllers.AjaxController.getStation(railWay).ajax({
       beforeSend: function() {
         $("#Station").children().remove();
-        $("#Station").append($('<option>').html("--- 選択してください ---").val(""));
+        $("#Station").append($('<option>').html("--- 駅を選択してください ---").val(""));
       },
       complete: function() {},
       success: function(result) {
@@ -181,31 +182,70 @@
       complete: function() {},
       success: function(result) {
         var resultList = JSON.parse(result);
-        var obj = {};
         for (i in resultList) {
           if (station == resultList[i].owl_sameAs) {
             console.log("------------------------------------------------------------");
             console.log("--- " + resultList[i].owl_sameAs);
             console.log("------------------------------------------------------------");
             for (j in resultList[i].odpt_platformInformation) {
-              if (resultList[i].odpt_platformInformation[j].odpt_barrierfreeFacility) {
-                console.log(resultList[i].odpt_platformInformation[j]);
-                for (k in resultList[i].odpt_platformInformation[j].odpt_barrierfreeFacility) {
-                  obj[resultList[i].odpt_platformInformation[j].odpt_barrierfreeFacility[k]] = resultList[i].odpt_platformInformation[j].odpt_carNumber
+              if (resultList[i].odpt_platformInformation[j]) {
+                // console.log(resultList[i].odpt_platformInformation[j]);
+                console.log(resultList[i].odpt_platformInformation[j].odpt_carComposition
+                  + " | " + resultList[i].odpt_platformInformation[j].odpt_carNumber
+                  + " | " + resultList[i].odpt_platformInformation[j].odpt_railDirection
+                  + " | " + resultList[i].odpt_platformInformation[j].odpt_barrierfreeFacility
+                  + " | " + resultList[i].odpt_platformInformation[j].odpt_surroundingArea
+                );
+                for (k in resultList[i].odpt_platformInformation[j].odpt_transferInformation) {
+                  console.log(resultList[i].odpt_platformInformation[j].odpt_transferInformation[k].odpt_railway
+                    + " | " + resultList[i].odpt_platformInformation[j].odpt_transferInformation[k].odpt_railDirection
+                    + " | " + resultList[i].odpt_platformInformation[j].odpt_transferInformation[k].odpt_necessaryTime
+                  );
                 }
+                // for (k in resultList[i].odpt_platformInformation[j].odpt_barrierfreeFacility) {
+                //   console.log(resultList[i].odpt_platformInformation[j].odpt_barrierfreeFacility[k]
+                //   );
+                // }
+                // for (k in resultList[i].odpt_platformInformation[j].odpt_surroundingArea) {
+                //   console.log(resultList[i].odpt_platformInformation[j].odpt_surroundingArea[k]
+                //   );
+                // }
               }
             }
-            console.log(obj);
             console.log("------------------------------------------------------------");
+            resultList[i].odpt_barrierfreeFacility.sort(sort_by('ugsrv_categoryName', false, function(a){ 
+              return a.toUpperCase();
+            }));
             for (j in resultList[i].odpt_barrierfreeFacility) {
-              // console.log(resultList[i].odpt_barrierfreeFacility[j]);
+              console.log(resultList[i].odpt_barrierfreeFacility[j]);
               console.log(resultList[i].odpt_barrierfreeFacility[j].owl_sameAs
                 + " | " + resultList[i].odpt_barrierfreeFacility[j].odpt_locatedAreaName
                 + " | " + resultList[i].odpt_barrierfreeFacility[j].odpt_placeName
                 + " | " + resultList[i].odpt_barrierfreeFacility[j].ugsrv_categoryName
                 + " | " + resultList[i].odpt_barrierfreeFacility[j].ugsrv_remark
               );
-              $("#Facility").append("<p>" + resultList[i].odpt_barrierfreeFacility[j].odpt_placeName + "に" + resultList[i].odpt_barrierfreeFacility[j].ugsrv_categoryName + "があります。</p>");
+              for (k in resultList[i].odpt_barrierfreeFacility[j].odpt_serviceDetail) {
+                console.log(resultList[i].odpt_barrierfreeFacility[j].odpt_serviceDetail[k].ugsrv_serviceStartTime
+                  + " | " + resultList[i].odpt_barrierfreeFacility[j].odpt_serviceDetail[k].ugsrv_ugsrv_serviceEndTime
+                  + " | " + resultList[i].odpt_barrierfreeFacility[j].odpt_serviceDetail[k].odpt_operationDay
+                  + " | " + resultList[i].odpt_barrierfreeFacility[j].odpt_serviceDetail[k].ug_direction
+                )
+              }
+              $("#Facility").append(
+                "<div class='col-xs-3'>" + 
+                  "<div class='tile'>" + 
+                    "<h3 class='tile-title'>" + resultList[i].odpt_barrierfreeFacility[j].ugsrv_categoryName + "</h3>" + 
+                    "<p>" + isNotNull(resultList[i].odpt_barrierfreeFacility[j].odpt_placeName) + "</p>" + 
+                    "<p>" + isNotNull(resultList[i].odpt_barrierfreeFacility[j].ugsrv_remark) + "</p>" + 
+                  "</div>" + 
+                "</div>"
+
+
+                // "<p>" + 
+                // resultList[i].odpt_barrierfreeFacility[j].odpt_placeName + "に" + 
+                // resultList[i].odpt_barrierfreeFacility[j].ugsrv_categoryName + "があります。" + 
+                // "</p>"
+              );
             }
           }
         }
@@ -218,6 +258,10 @@
     });
   }
   
+  function isNotNull(target) {
+    if (target) { return target } else { return "";}
+  }
+
   // /** 駅時刻表取得 */
   // function getStationTimetable(station) {
   //   jsRoutes.controllers.AjaxController.getStationTimetable(station).ajax({
