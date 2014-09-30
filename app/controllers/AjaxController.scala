@@ -52,7 +52,18 @@ object AjaxController extends Controller {
    * 駅施設情報 odpt:StationFacility
    */
   def getStationFacility(station: String) = Action { 
-    val url = endPoint + "datapoints?rdf:type=odpt:StationFacility" + "&owl:sameAs=" + station.replaceAll("_", ":") + "&acl:consumerKey=" + consumerKey;
+    val url = endPoint + "datapoints?rdf:type=odpt:StationFacility&owl:sameAs=" + station.replaceAll("_", ":") + "&acl:consumerKey=" + consumerKey;
+    JavaHttpRequest.execute(url) match {
+      case st: String => Ok(st)
+      case _          => BadRequest
+    }
+  }
+
+  /**
+   * 列車ロケーション情報 odpt:Train
+   */
+  def getTrain(railWay: String) = Action { 
+    val url = endPoint + "datapoints?rdf:type=odpt:Train&odpt:railway=" + railWay.replaceAll("_", ":") + "&acl:consumerKey=" + consumerKey;
     JavaHttpRequest.execute(url) match {
       case st: String => Ok(st)
       case _          => BadRequest
