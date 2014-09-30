@@ -3,10 +3,11 @@
 @main(titele)(flash) {
 
   <SELECT id="RailWay" name="RailWay" class="form-control select select-primary" data-toggle="RailWay"></SELECT>
-  <SELECT id="Station" name="Station" class="form-control select select-primary" data-toggle="Station"></SELECT>
+  <!-- <SELECT id="Station" name="Station" class="form-control select select-primary" data-toggle="Station"></SELECT> -->
+  <table id="Station"></table>
   <br/>
-  <div id="Facility"></div>
-  <div id="StationTimetable"></div>
+<!--   <div id="Facility"></div> -->
+<!--   <div id="StationTimetable"></div> -->
 <!--   <div id="map-canvas"></div> -->
 
   <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
@@ -104,18 +105,16 @@
     if (this.value) {
       // 駅情報取得
       getStation(this.value);
-    } else {
-      init();
+      // 列車ロケーション情報取得
+      getTrain(this.value);
     }
   });
   
   /** 駅変更時の処理 */
   $("#Station").change(function(){
     if (this.value) {
-      // 駅情報取得
-      getStationFacility(this.value);
-    } else {
-      init();
+      // // 駅情報取得
+      // getStationFacility(this.value);
     }
   });
   
@@ -140,7 +139,6 @@
       },
       error: function(result) {
         window.alert("エラーが発生しました。画面を更新して頂くか、時間をおいてから再度お試し下さい。");
-        $("#map-canvas").append("<p>エラーが発生しました。画面を更新して頂くか、時間をおいてから再度お試し下さい。</p>");
         console.log("error : " + result)
       }
     });
@@ -162,106 +160,120 @@
         }));
         for (i in resultList) {
           // valueは『odpt:facility』（駅施設を表すオブジェクトのURI）を指定
-          $("#Station").append($('<option>').html(resultList[i].dc_title + "駅").val(resultList[i].odpt_facility));
+          // $("#Station").append($('<option>').html(resultList[i].dc_title + "駅").val(resultList[i].odpt_facility));
+          $("#Station").append('<tr><td>' + resultList[i].dc_title + "駅" + '</td></tr>');
         }
       },
       error: function(result) {
         window.alert("エラーが発生しました。画面を更新して頂くか、時間をおいてから再度お試し下さい。");
-        $("#map-canvas").append("<p>エラーが発生しました。画面を更新して頂くか、時間をおいてから再度お試し下さい。</p>");
         console.log("error : " + result)
       }
     });
   }
   
-  /** 駅施設情報 odpt:StationFacility */
-  function getStationFacility(station) {
-    jsRoutes.controllers.AjaxController.getStationFacility(station).ajax({
-      beforeSend: function() {
-        $("#Facility").children().remove();
-      },
+  /** 列車ロケーション情報 odpt:Train */
+  function getTrain(railWay) {
+    jsRoutes.controllers.AjaxController.getTrain(railWay).ajax({
+      beforeSend: function() {},
       complete: function() {},
       success: function(result) {
         var resultList = JSON.parse(result);
         for (i in resultList) {
-          if (station == resultList[i].owl_sameAs) {
-            console.log("------------------------------------------------------------");
-            console.log("--- " + resultList[i].owl_sameAs);
-            console.log("------------------------------------------------------------");
-            for (j in resultList[i].odpt_platformInformation) {
-              if (resultList[i].odpt_platformInformation[j]) {
-                // console.log(resultList[i].odpt_platformInformation[j]);
-                console.log(resultList[i].odpt_platformInformation[j].odpt_carComposition
-                  + " | " + resultList[i].odpt_platformInformation[j].odpt_carNumber
-                  + " | " + resultList[i].odpt_platformInformation[j].odpt_railDirection
-                  + " | " + resultList[i].odpt_platformInformation[j].odpt_barrierfreeFacility
-                  + " | " + resultList[i].odpt_platformInformation[j].odpt_surroundingArea
-                );
-                for (k in resultList[i].odpt_platformInformation[j].odpt_transferInformation) {
-                  console.log(resultList[i].odpt_platformInformation[j].odpt_transferInformation[k].odpt_railway
-                    + " | " + resultList[i].odpt_platformInformation[j].odpt_transferInformation[k].odpt_railDirection
-                    + " | " + resultList[i].odpt_platformInformation[j].odpt_transferInformation[k].odpt_necessaryTime
-                  );
-                }
-                // for (k in resultList[i].odpt_platformInformation[j].odpt_barrierfreeFacility) {
-                //   console.log(resultList[i].odpt_platformInformation[j].odpt_barrierfreeFacility[k]
-                //   );
-                // }
-                // for (k in resultList[i].odpt_platformInformation[j].odpt_surroundingArea) {
-                //   console.log(resultList[i].odpt_platformInformation[j].odpt_surroundingArea[k]
-                //   );
-                // }
-              }
-            }
-            console.log("------------------------------------------------------------");
-            resultList[i].odpt_barrierfreeFacility.sort(sort_by('ugsrv_categoryName', false, function(a){ 
-              return a.toUpperCase();
-            }));
-            for (j in resultList[i].odpt_barrierfreeFacility) {
-              console.log(resultList[i].odpt_barrierfreeFacility[j]);
-              console.log(resultList[i].odpt_barrierfreeFacility[j].owl_sameAs
-                + " | " + resultList[i].odpt_barrierfreeFacility[j].odpt_locatedAreaName
-                + " | " + resultList[i].odpt_barrierfreeFacility[j].odpt_placeName
-                + " | " + resultList[i].odpt_barrierfreeFacility[j].ugsrv_categoryName
-                + " | " + resultList[i].odpt_barrierfreeFacility[j].ugsrv_remark
-              );
-              for (k in resultList[i].odpt_barrierfreeFacility[j].odpt_serviceDetail) {
-                console.log(resultList[i].odpt_barrierfreeFacility[j].odpt_serviceDetail[k].ugsrv_serviceStartTime
-                  + " | " + resultList[i].odpt_barrierfreeFacility[j].odpt_serviceDetail[k].ugsrv_ugsrv_serviceEndTime
-                  + " | " + resultList[i].odpt_barrierfreeFacility[j].odpt_serviceDetail[k].odpt_operationDay
-                  + " | " + resultList[i].odpt_barrierfreeFacility[j].odpt_serviceDetail[k].ug_direction
-                )
-              }
-              $("#Facility").append(
-                "<div class='col-xs-3'>" + 
-                  "<div class='tile'>" + 
-                    "<h3 class='tile-title'>" + resultList[i].odpt_barrierfreeFacility[j].ugsrv_categoryName + "</h3>" + 
-                    "<p>" + isNotNull(resultList[i].odpt_barrierfreeFacility[j].odpt_placeName) + "</p>" + 
-                    "<p>" + isNotNull(resultList[i].odpt_barrierfreeFacility[j].ugsrv_remark) + "</p>" + 
-                  "</div>" + 
-                "</div>"
-
-
-                // "<p>" + 
-                // resultList[i].odpt_barrierfreeFacility[j].odpt_placeName + "に" + 
-                // resultList[i].odpt_barrierfreeFacility[j].ugsrv_categoryName + "があります。" + 
-                // "</p>"
-              );
-            }
-          }
+          console.log(resultList[i]);
         }
       },
       error: function(result) {
         window.alert("エラーが発生しました。画面を更新して頂くか、時間をおいてから再度お試し下さい。");
-        $("#map-canvas").append("<p>エラーが発生しました。画面を更新して頂くか、時間をおいてから再度お試し下さい。</p>");
         console.log("error : " + result)
       }
     });
   }
-  
-  function isNotNull(target) {
-    if (target) { return target } else { return "";}
-  }
 
+  // /** 駅施設情報 odpt:StationFacility */
+  // function getStationFacility(station) {
+  //   jsRoutes.controllers.AjaxController.getStationFacility(station).ajax({
+  //     beforeSend: function() {
+  //       $("#Facility").children().remove();
+  //     },
+  //     complete: function() {},
+  //     success: function(result) {
+  //       var resultList = JSON.parse(result);
+  //       for (i in resultList) {
+  //         if (station == resultList[i].owl_sameAs) {
+  //           console.log("------------------------------------------------------------");
+  //           console.log("--- " + resultList[i].owl_sameAs);
+  //           console.log("------------------------------------------------------------");
+  //           for (j in resultList[i].odpt_platformInformation) {
+  //             if (resultList[i].odpt_platformInformation[j]) {
+  //               // console.log(resultList[i].odpt_platformInformation[j]);
+  //               console.log(resultList[i].odpt_platformInformation[j].odpt_carComposition
+  //                 + " | " + resultList[i].odpt_platformInformation[j].odpt_carNumber
+  //                 + " | " + resultList[i].odpt_platformInformation[j].odpt_railDirection
+  //                 + " | " + resultList[i].odpt_platformInformation[j].odpt_barrierfreeFacility
+  //                 + " | " + resultList[i].odpt_platformInformation[j].odpt_surroundingArea
+  //               );
+  //               for (k in resultList[i].odpt_platformInformation[j].odpt_transferInformation) {
+  //                 console.log(resultList[i].odpt_platformInformation[j].odpt_transferInformation[k].odpt_railway
+  //                   + " | " + resultList[i].odpt_platformInformation[j].odpt_transferInformation[k].odpt_railDirection
+  //                   + " | " + resultList[i].odpt_platformInformation[j].odpt_transferInformation[k].odpt_necessaryTime
+  //                 );
+  //               }
+  //               // for (k in resultList[i].odpt_platformInformation[j].odpt_barrierfreeFacility) {
+  //               //   console.log(resultList[i].odpt_platformInformation[j].odpt_barrierfreeFacility[k]
+  //               //   );
+  //               // }
+  //               // for (k in resultList[i].odpt_platformInformation[j].odpt_surroundingArea) {
+  //               //   console.log(resultList[i].odpt_platformInformation[j].odpt_surroundingArea[k]
+  //               //   );
+  //               // }
+  //             }
+  //           }
+  //           console.log("------------------------------------------------------------");
+  //           resultList[i].odpt_barrierfreeFacility.sort(sort_by('ugsrv_categoryName', false, function(a){ 
+  //             return a.toUpperCase();
+  //           }));
+  //           for (j in resultList[i].odpt_barrierfreeFacility) {
+  //             console.log(resultList[i].odpt_barrierfreeFacility[j]);
+  //             console.log(resultList[i].odpt_barrierfreeFacility[j].owl_sameAs
+  //               + " | " + resultList[i].odpt_barrierfreeFacility[j].odpt_locatedAreaName
+  //               + " | " + resultList[i].odpt_barrierfreeFacility[j].odpt_placeName
+  //               + " | " + resultList[i].odpt_barrierfreeFacility[j].ugsrv_categoryName
+  //               + " | " + resultList[i].odpt_barrierfreeFacility[j].ugsrv_remark
+  //             );
+  //             for (k in resultList[i].odpt_barrierfreeFacility[j].odpt_serviceDetail) {
+  //               console.log(resultList[i].odpt_barrierfreeFacility[j].odpt_serviceDetail[k].ugsrv_serviceStartTime
+  //                 + " | " + resultList[i].odpt_barrierfreeFacility[j].odpt_serviceDetail[k].ugsrv_ugsrv_serviceEndTime
+  //                 + " | " + resultList[i].odpt_barrierfreeFacility[j].odpt_serviceDetail[k].odpt_operationDay
+  //                 + " | " + resultList[i].odpt_barrierfreeFacility[j].odpt_serviceDetail[k].ug_direction
+  //               )
+  //             }
+  //             $("#Facility").append(
+  //               "<div class='col-xs-3'>" + 
+  //                 "<div class='tile'>" + 
+  //                   "<h3 class='tile-title'>" + resultList[i].odpt_barrierfreeFacility[j].ugsrv_categoryName + "</h3>" + 
+  //                   "<p>" + isNotNull(resultList[i].odpt_barrierfreeFacility[j].odpt_placeName) + "</p>" + 
+  //                   "<p>" + isNotNull(resultList[i].odpt_barrierfreeFacility[j].ugsrv_remark) + "</p>" + 
+  //                 "</div>" + 
+  //               "</div>"
+  //               // "<p>" + 
+  //               // resultList[i].odpt_barrierfreeFacility[j].odpt_placeName + "に" + 
+  //               // resultList[i].odpt_barrierfreeFacility[j].ugsrv_categoryName + "があります。" + 
+  //               // "</p>"
+  //             );
+  //           }
+  //         }
+  //       }
+  //     },
+  //     error: function(result) {
+  //       window.alert("エラーが発生しました。画面を更新して頂くか、時間をおいてから再度お試し下さい。");
+  //       $("#map-canvas").append("<p>エラーが発生しました。画面を更新して頂くか、時間をおいてから再度お試し下さい。</p>");
+  //       console.log("error : " + result)
+  //     }
+  //   });
+  // }
+  // function isNotNull(target) {
+  //   if (target) { return target } else { return "";}
+  // }
   // /** 駅時刻表取得 */
   // function getStationTimetable(station) {
   //   jsRoutes.controllers.AjaxController.getStationTimetable(station).ajax({

@@ -15,6 +15,7 @@ object JsRouter extends Controller {
            ,routes.javascript.AjaxController.getStation
            ,routes.javascript.AjaxController.getStationTimetable
            ,routes.javascript.AjaxController.getStationFacility
+           ,routes.javascript.AjaxController.getTrain
         )
       ).as("text/javascript")
   }

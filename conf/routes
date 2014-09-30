@@ -15,3 +15,4 @@ GET     /getRailway                  controllers.AjaxController.getRailway
 GET     /getStation                  controllers.AjaxController.getStation(railWay: String)
 GET     /getStationTimetable         controllers.AjaxController.getStationTimetable(station: String)
 GET     /getStationFacility          controllers.AjaxController.getStationFacility(station: String)
+GET     /getTrain                    controllers.AjaxController.getTrain(railWay: String)
